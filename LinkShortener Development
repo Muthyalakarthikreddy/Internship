@@ -1,0 +1,80 @@
+import java.util.HashMap;
+import java.util.Scanner;
+import java.util.UUID;
+
+public class LinkShortener {
+    // Maps to store shortened URLs and original URLs
+    private HashMap<String, String> urlMap = new HashMap<>();
+    private HashMap<String, String> reverseUrlMap = new HashMap<>();
+    
+    // Shorten a long URL
+    public String shortenUrl(String longUrl) {
+        if (reverseUrlMap.containsKey(longUrl)) {
+            return reverseUrlMap.get(longUrl);
+        }
+        
+        // Generate a unique short URL using UUID
+        String shortUrl = UUID.randomUUID().toString().substring(0, 6);
+        
+        // Check for collisions
+        while (urlMap.containsKey(shortUrl)) {
+            shortUrl = UUID.randomUUID().toString().substring(0, 6);
+        }
+        
+        // Store mappings
+        urlMap.put(shortUrl, longUrl);
+        reverseUrlMap.put(longUrl, shortUrl);
+        
+        return shortUrl;
+    }
+    
+    // Expand a short URL to the original URL
+    public String expandUrl(String shortUrl) {
+        if (urlMap.containsKey(shortUrl)) {
+            return urlMap.get(shortUrl);
+        } else {
+            return "Error: Short URL not found!";
+        }
+    }
+    
+    public static void main(String[] args) {
+        LinkShortener linkShortener = new LinkShortener();
+        Scanner scanner = new Scanner(System.in);
+        
+        while (true) {
+            System.out.println("\nLink Shortener CLI");
+            System.out.println("1. Shorten URL");
+            System.out.println("2. Expand URL");
+            System.out.println("3. Exit");
+            System.out.print("Choose an option: ");
+            
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+            
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter a long URL to shorten: ");
+                    String longUrl = scanner.nextLine();
+                    String shortUrl = linkShortener.shortenUrl(longUrl);
+                    System.out.println("Shortened URL: " + shortUrl);
+                    break;
+                    
+                case 2:
+                    System.out.print("Enter a short URL to expand: ");
+                    String shortUrlToExpand = scanner.nextLine();
+                    String expandedUrl = linkShortener.expandUrl(shortUrlToExpand);
+                    System.out.println("Original URL: " + expandedUrl);
+                    break;
+                    
+                case 3:
+                    System.out.println("Exiting...");
+                    scanner.close();
+                    return;
+                    
+                default:
+                    System.out.println("Invalid option. Please try again.");
+                    break;
+            }
+        }
+    }
+}
